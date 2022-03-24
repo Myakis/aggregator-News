@@ -19,26 +19,23 @@ const getData = async url => {
 };
 
 const renderCard = data => {
-  newsList.innerHTML = '';
-  console.log(data);
-  data.forEach((news, i) => {
+  data.forEach(news => {
     const card = document.createElement('li');
     card.className = 'news__item card-news';
     card.innerHTML = `
-    <img src=${
-      news.urlToImage ? news.urlToImage : 'img/photo-plug.jpg'
-    } alt="Продажи китайских смартфонов в России выросли в два раза" />
-    <h3 class="card-news__title">
-      <a class="card-news__link" href=${news.url}>${news.title}</a>
-    </h3>
-    <p class="card-news__description">
-     ${news.description ? news.description : ''}
-    </p>
-    <div class="card-news__data">
-      <time class="card-news__time" datetime="${news.publishedAt}"> <span>16/03/2022</span> 11:06 </time>
-      <div class="card-news__author">${news.author ? news.author : 'Инкогнито'}</div>
-    </div>
-
+        <img src=${
+          news.urlToImage ? news.urlToImage : 'img/photo-plug.jpg'
+        } alt="Продажи китайских смартфонов в России выросли в два раза" />
+        <h3 class="card-news__title">
+          <a class="card-news__link" target="_blank" href=${news.url}>${news.title}</a>
+        </h3>
+        <p class="card-news__description">
+        ${news.description ? news.description : ''}
+        </p>
+        <div class="card-news__data">
+          <time class="card-news__time" datetime="${news.publishedAt}"> <span>16/03/2022</span> 11:06 </time>
+          <div class="card-news__author">${news.author ? news.author : 'Инкогнито'}</div>
+        </div>
     `;
 
     newsList.insertAdjacentElement('beforeend', card);
@@ -46,8 +43,9 @@ const renderCard = data => {
 };
 
 const loadNews = async () => {
-  const url = ` https://newsapi.org/v2/top-headlines?country=ru`;
-  const data = await getData(url);
+  const url = `https://newsapi.org/v2/top-headlines?country=ru`;
+  const data = await getData('https://newsapi.org/v2/top-headlines?country=ru');
   renderCard(data.articles);
 };
+
 loadNews();
