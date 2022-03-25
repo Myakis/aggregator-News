@@ -87,7 +87,7 @@ const loadNews = async () => {
   //Поиск по стране(по умолчанию ru)
   const country = localStorage.getItem('country') || 'ru';
   choices.setChoiceByValue(country);
-  const data = await getData(`https://newsapi.org/v2/top-headlines?country=${country}&category=science`);
+  const data = await getData(`https://newsapi.org/v2/top-headlines?country=${country}`);
 
   //Рендер карточек на основе полученных данных
   renderCard(data.articles);

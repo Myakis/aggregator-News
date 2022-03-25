@@ -38,7 +38,7 @@ document.body.innerHTML = `
 <div class="title-wrapper">
   <div class="container">
     <h1 class="visually-hidden">Агрегатор новостей</h1>
-    <h2 class="title hide">По вашему запросу “новости про IT” найдено <span>6 результатов</span></h2>
+    <h2 class="title hide"></h2>
   </div>
 </div>
 <section class="news">
