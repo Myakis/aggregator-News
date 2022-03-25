@@ -26,6 +26,7 @@ const getImage = url =>
       resolve(image);
     });
     image.addEventListener('error', () => {
+      image.src = `img/photo-plug.jpg`;
       resolve(image);
     });
     image.src = url || `img/photo-plug.jpg`;
@@ -110,7 +111,7 @@ const num_word = (value, words) => {
 };
 
 const searchNews = async value => {
-  const data = await getData(`https://newsapi.org/v2/everything?q=${value}`);
+  const data = await getData(`https://newsapi.org/v2/everything?q=${value}&pageSize=100`);
   title.classList.remove('hide');
   title.textContent = `По вашему запросу “${value}” найдено ${data.articles.length} ${num_word(data.articles.length, [
     'результат',
