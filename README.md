@@ -4,4 +4,4 @@
 
 ### Страничка предосталяет новости различных стран. Можно сортировать по странне, а так же воспользоваться строкой поиска для получения новостей необходимой вам тематики
 
-![Превьюшка](https://github.com/{Myakis}/{aggregator-News}/raw/{master}/{img/}/prev.png)
+![Превьюшка](https://github.com/{myakis}/{aggregator-News}/{master}/{img/}/prev.png)
