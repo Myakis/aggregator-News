@@ -2,6 +2,8 @@ const API_KEY = 'f36184a7957445a382ad24af237cba3e';
 
 const choiseEl = document.querySelector('.header__country-list');
 const newsList = document.querySelector('.news__list');
+const formSearch = document.querySelector('form');
+const title = document.querySelector('.title');
 
 const choices = new Choices(choiseEl, {
   searchEnabled: false,
@@ -14,38 +16,120 @@ const getData = async url => {
       'X-Api-Key': API_KEY,
     },
   });
-
   return response.json();
 };
 
+const getImage = url =>
+  new Promise(resolve => {
+    const image = new Image();
+    image.addEventListener('load', () => {
+      resolve(image);
+    });
+    image.addEventListener('error', () => {
+      resolve(image);
+    });
+    image.src = url || `img/photo-plug.jpg`;
+    return image;
+  });
+
+const formatDate = isoDate => {
+  //Форматируем полученную дату
+  const date = new Date(isoDate);
+  const fullDate = date.toLocaleString('en-BG', {
+    year: '2-digit',
+    month: '2-digit',
+    day: '2-digit',
+  });
+  const fullTime = date.toLocaleString('re', {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+
+  return `<span>${fullDate}</span>    ${fullTime} `;
+};
+
 const renderCard = data => {
-  data.forEach(news => {
+  newsList.innerHTML = '';
+  data.forEach(async news => {
     const card = document.createElement('li');
     card.className = 'news__item card-news';
-    card.innerHTML = `
-        <img src=${
-          news.urlToImage ? news.urlToImage : 'img/photo-plug.jpg'
-        } alt="Продажи китайских смартфонов в России выросли в два раза" />
+    const img = await getImage(news.urlToImage);
+    img.alt = news.title;
+    card.append(img);
+
+    card.insertAdjacentHTML(
+      'beforeend',
+      `
         <h3 class="card-news__title">
           <a class="card-news__link" target="_blank" href=${news.url}>${news.title}</a>
         </h3>
         <p class="card-news__description">
-        ${news.description ? news.description : ''}
+        ${news.description || ''}
         </p>
         <div class="card-news__data">
-          <time class="card-news__time" datetime="${news.publishedAt}"> <span>16/03/2022</span> 11:06 </time>
-          <div class="card-news__author">${news.author ? news.author : 'Инкогнито'}</div>
+          <time class="card-news__time" datetime="${news.publishedAt}"> ${formatDate(news.publishedAt)} </time>
+          <div class="card-news__author">${news.author || 'Инкогнито'}</div>
         </div>
-    `;
+    `
+    );
 
-    newsList.insertAdjacentElement('beforeend', card);
+    newsList.insertAdjacentElement('afterbegin', card);
   });
 };
 
 const loadNews = async () => {
-  const url = `https://newsapi.org/v2/top-headlines?country=ru`;
-  const data = await getData('https://newsapi.org/v2/top-headlines?country=ru');
+  //Создаение прелоэдера
+  const preLoader = document.createElement('li');
+  preLoader.className = 'preLoader';
+  newsList.insertAdjacentElement('afterbegin', preLoader);
+
+  //Поиск по стране(по умолчанию ru)
+  const country = localStorage.getItem('country') || 'ru';
+  choices.setChoiceByValue(country);
+  const data = await getData(`https://newsapi.org/v2/top-headlines?country=${country}&category=science`);
+
+  //Рендер карточек на основе полученных данных
   renderCard(data.articles);
 };
+
+choiseEl.addEventListener('change', e => {
+  const value = e.detail.value;
+  localStorage.setItem('country', value);
+  title.classList.add('hide');
+  loadNews();
+});
+
+//Склонение числительных
+const num_word = (value, words) => {
+  value = Math.abs(value) % 100;
+  const num = value % 10;
+  if (value > 10 && value < 20) return words[2];
+  if (num > 1 && num < 5) return words[1];
+  if (num == 1) return words[0];
+  return words[2];
+};
+
+const searchNews = async value => {
+  const data = await getData(`https://newsapi.org/v2/everything?q=${value}`);
+  title.classList.remove('hide');
+  title.textContent = `По вашему запросу “${value}” найдено ${data.articles.length} ${num_word(data.articles.length, [
+    'результат',
+    'результаты',
+    'резульатов',
+  ])} `;
+  //Рендер карточек на основе полученных данных
+  renderCard(data.articles);
+};
+
+formSearch.addEventListener('submit', e => {
+  e.preventDefault();
+
+  const value = formSearch.search.value;
+  //очищаем селект
+  choices.setChoiceByValue('');
+  //осуществляем поиск на основе ввыденных данных
+  searchNews(value);
+  formSearch.reset();
+});
 
 loadNews();
